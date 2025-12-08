@@ -13,8 +13,13 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @AllArgsConstructor
 public class StudentController {
-IStudentService studentService;
+    @Autowired
+    private IStudentService studentService;
 
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello from Student Management!";
+    }
     @GetMapping("/getAllStudents")
     public List<Student> getAllStudents() { return studentService.getAllStudents(); }
 

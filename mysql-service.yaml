@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  namespace: devops
+spec:
+  type: NodePort
+  ports:
+    - port: 8080             # Le port exposé du Service
+      targetPort: 9090       # CORRIGÉ : Le port réel sur lequel le Pod Spring écoute
+      nodePort: 30080        # → http://<minikube-ip>:30080
+  selector:
+    app: spring

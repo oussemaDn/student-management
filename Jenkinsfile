@@ -2,22 +2,23 @@ pipeline {
     agent any
 
     environment {
-        // Credentials IDs in Jenkins
+        // --- Credentials IDs in Jenkins ---
         DOCKER_HUB_CREDENTIALS = 'dockerhub-push-id'
         SONAR_TOKEN_ID = 'sonarqube-analysis-token'
-        GITHUB_CREDENTIALS = 'github-token' // Make sure this exists in Jenkins
+        GITHUB_CREDENTIALS = 'github-token'
+        KUBE_CONFIG_ID = 'jenkins-kubeconfig'
 
-        // Image & project config
+        // --- Image & project config ---
         IMAGE_NAME = 'oussema2025/student-management'
         IMAGE_TAG = 'latest'
         PROJECT_KEY = 'Student-Management-App'
 
-        // Server address
-        WSL_IP = '172.28.8.70'
+        // --- Server addresses ---
+        WSL_IP = '172.28.8.70' // SonarQube server IP
+        K8S_NAMESPACE = 'devops'
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 echo 'Récupération du projet depuis GitHub...'
@@ -74,6 +75,22 @@ pipeline {
             }
         }
 
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    echo "Déploiement de l'application sur Kubernetes..."
+                    withKubeConfig([credentialsId: env.KUBE_CONFIG_ID, namespace: env.K8S_NAMESPACE]) {
+                        // Déploiement MySQL
+                        sh 'kubectl apply -f mysql-deployment.yaml'
+                        sh 'kubectl apply -f spring-deployment.yaml'
+
+                        // Vérification
+                        sh 'kubectl get pods -n ${K8S_NAMESPACE}'
+                        sh 'kubectl get svc -n ${K8S_NAMESPACE}'
+                    }
+                }
+            }
+        }
     }
 
     post {
@@ -85,4 +102,3 @@ pipeline {
         }
     }
 }
-
