@@ -8,6 +8,6 @@ spec:
   ports:
     - port: 8080             # Le port exposé du Service
       targetPort: 9090       # CORRIGÉ : Le port réel sur lequel le Pod Spring écoute
-      nodePort: 30080        # → http://<minikube-ip>:30080
+      nodePort: 30081        # → http://<minikube-ip>:30080
   selector:
-    app: spring
+    app: spring-app
